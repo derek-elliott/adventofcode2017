@@ -5,14 +5,23 @@ import (
 	"strings"
 )
 
+type Visited struct {
+	Visited     bool
+	StepVisited int
+}
+
 // DaySix solves the sixth day of Advent of Code 2017
-func DaySix(data []int) int {
+func DaySix(data []int) (int, int) {
 	test := make([]int, len(data))
 	copy(test, data)
-	results := make(map[string]bool)
+	results := make(map[string]Visited)
 	steps := 0
-	for results[intListToString(test)] == false {
-		results[intListToString(test)] = true
+	for results[intListToString(test)].Visited == false {
+		visited := &Visited{
+			true,
+			steps,
+		}
+		results[intListToString(test)] = *visited
 		index, value := firstMax(test)
 		test[index] = 0
 		for value != 0 {
@@ -25,7 +34,7 @@ func DaySix(data []int) int {
 		}
 		steps++
 	}
-	return steps
+	return steps, steps - results[intListToString(test)].StepVisited
 }
 
 func firstMax(data []int) (index, max int) {
