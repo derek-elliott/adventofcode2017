@@ -1,9 +1,10 @@
 package main
 
 import (
-	"log"
 	"net/http"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 )
 
 // Logger function
@@ -13,12 +14,11 @@ func Logger(inner http.Handler, name string) http.Handler {
 
 		inner.ServeHTTP(w, r)
 
-		log.Printf(
-			"%s\t%s\t%s\t%s",
-			r.Method,
-			r.RequestURI,
-			name,
-			time.Since(start),
-		)
+		log.WithFields(log.Fields{
+			"method":        r.Method,
+			"request_uri":   r.RequestURI,
+			"name":          name,
+			"response_time": time.Since(start),
+		}).Info("Request received")
 	})
 }
