@@ -5,6 +5,7 @@ import (
 	"strings"
 )
 
+// Visited holds whether a block has been visited and which step it was visited
 type Visited struct {
 	Visited     bool
 	StepVisited int

@@ -26,11 +26,6 @@ type InputDataIntList struct {
 	Data []int `json:"data"`
 }
 
-// DaySixResponse holds the response from DaySixHandler
-type DaySixResponse struct {
-	Steps int `json:"steps"`
-}
-
 var routes Routes
 
 func init() {
@@ -52,6 +47,11 @@ func init() {
 			"POST",
 			"/2017/daysix/2",
 			DaySixPartTwoHandler,
+		}, Route{
+			"Day7Pt1",
+			"POST",
+			"/2017/dayseven/1",
+			DaySevenPartOneHandler,
 		},
 	}
 }
@@ -77,6 +77,11 @@ func NewRouter() *mux.Router {
 // Index function
 func Index(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(routes)
+}
+
+// DaySixResponse holds the response from DaySixHandler
+type DaySixResponse struct {
+	Steps int `json:"steps"`
 }
 
 // DaySixPartOneHandler parses the request body for DaySix and serializes the response
@@ -116,8 +121,7 @@ func DaySixPartTwoHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = json.Unmarshal(b, &input)
-	if err != nil {
+	if err = json.Unmarshal(b, &input); err != nil {
 		log.WithError(err).Error("Unable to deserialize request body")
 		w.WriteHeader(http.StatusInternalServerError)
 		return
@@ -129,6 +133,39 @@ func DaySixPartTwoHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
 	if err = json.NewEncoder(w).Encode(DaySixResponse{steps}); err != nil {
+		log.WithError(err).Error("Unable to serialize response")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+}
+
+// DaySevenResponse holds the response for day seven
+type DaySevenResponse struct {
+	Root string `json:"root"`
+}
+
+// DaySevenPartOneHandler parses the request for day seven part one and returns the name of the root node
+func DaySevenPartOneHandler(w http.ResponseWriter, r *http.Request) {
+	var inputData handlers.DaySevenInputs
+	b, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.WithError(err).Error("Unable to read request body")
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	if err = json.Unmarshal(b, &inputData); err != nil {
+		log.WithError(err).Error("Unable to deserialize request body")
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	root := handlers.DaySevenPartOne(inputData)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	if err = json.NewEncoder(w).Encode(DaySevenResponse{root}); err != nil {
 		log.WithError(err).Error("Unable to serialize response")
 		w.WriteHeader(http.StatusInternalServerError)
 		return

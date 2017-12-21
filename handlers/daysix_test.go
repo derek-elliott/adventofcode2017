@@ -10,7 +10,7 @@ type DaySixTestCase struct {
 
 type DaySixTestCases []DaySixTestCase
 
-var cases = DaySixTestCases{
+var daySixCases = DaySixTestCases{
 	DaySixTestCase{
 		[]int{0, 2, 7, 0},
 		[]int{5, 4},
@@ -19,7 +19,7 @@ var cases = DaySixTestCases{
 }
 
 func TestDaySix(t *testing.T) {
-	for _, test := range cases {
+	for _, test := range daySixCases {
 		testValue1, testValue2 := DaySix(test.Data)
 		if testValue1 != test.Target[0] || testValue2 != test.Target[1] {
 			t.Errorf("Test Failed! Returned: (%d, %d), %s", testValue1, testValue2, test.Message)
